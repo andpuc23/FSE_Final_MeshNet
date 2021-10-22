@@ -16,11 +16,13 @@ As authors mention, please cite them in your research:
 ## Quickstart
 
 __scripts__ directory contains shell scripts for the main subroutines:
-1. get_dataset.sh to download the dataset from Google.Drive
-2. preprocess_data.sh does the data processing - unzips downloaded archive, reencodes the mesh models, etc.
-3. train_model.sh performs the model training
-4. eval_model.sh checks model performance
+1. install_libs.sh downloads all required python libraries, listed in requirements.txt 
+2. get_dataset.sh to download the dataset from Google.Drive
+3. preprocess_data.sh does the data processing - unzips downloaded archive, re-encodes the mesh models, etc.
+4. train_model.sh performs the model training
+5. eval_model.sh checks model performance
 
+To use the project as-is run all the .sh files sequentially
 
 ## Development
 
@@ -30,9 +32,9 @@ todo file description
 
 ### List of good deeds
 
-- [ ] make a plan
+- [x] make a plan
 - [x] create script files
-- [ ] fill scripts
+- [x] fill scripts
 - [ ] docker file, docker image
 - [ ] build system (do we need it?)
 - [ ] tests
