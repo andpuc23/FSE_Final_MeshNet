@@ -20,21 +20,21 @@ As authors mention, please cite them in your research:
 'git clone https://github.com/andpuc23/Sk_FSE_Final_MeshNet.git'
 
 2. Go to repo's directory
-'cd Sk_FSE_Final_MeshNet'
+'''cd Sk_FSE_Final_MeshNet'''
 
 3. Bult docker image 
-'docker build .'
+'''docker build .'''
 
 4. Run docker container using image
-'docker run --rm -it -v /:/<directory in docker> <the name of the image that was built>'
+'''docker run --rm -it -v /:/<directory in docker> <the name of the image that was built>'''
 
 5. Allow to run bash scripts
-'chmod +x do_all_the_staff.sh ./scripts/*'
+'''chmod +x do_all_the_stuff.sh ./scripts/*'''
 or
-'chmod 775 do_all_the_staff.sh ./scripts/*'
+'''chmod 775 do_all_the_stuff.sh ./scripts/*'''
 
 6. Run all scripts using 
-'sh do_all_the_staff.sh'
+'''sh do_all_the_stuff.sh'''
 
 ## Development
 
