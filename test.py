@@ -45,8 +45,8 @@ def test_model(model):
         ft_all = append_feature(ft_all, feas.detach())
         lbl_all = append_feature(lbl_all, targets.detach(), flaten=True)
 
-    print(f'Accuracy: {float(correct_num) / len(data_set)}')
-    print(f'mAP: {calculate_map(ft_all, lbl_all)}')
+    print('Accuracy: {}'.format(float(correct_num) / len(data_set)))
+    print('mAP: {}'.format(calculate_map(ft_all, lbl_all)))
 
 
 if __name__ == '__main__':
