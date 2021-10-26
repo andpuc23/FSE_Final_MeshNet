@@ -16,15 +16,25 @@ As authors mention, please cite them in your research:
 ```
 
 ## Quickstart
-`scripts` directory contains shell scripts for the main subroutines:
-1. install_libs.sh downloads all required python libraries, listed in requirements.txt 
-2. get_dataset.sh to download the dataset from Google.Drive
-3. preprocess_data.sh does the data processing - unzips downloaded archive, re-encodes the mesh models, etc.
-4. train_model.sh performs the model training
-5. eval_model.sh checks model performance
+1. Clone repo to your local computer:
+'git clone https://github.com/andpuc23/Sk_FSE_Final_MeshNet.git'
 
-To use the project as-is run all the .sh files sequentially __or__
-run do_all_the_stuff.sh, which has all the scripts inside
+2. Go to repo's directory
+'cd Sk_FSE_Final_MeshNet'
+
+3. Bult docker image 
+'docker build .'
+
+4. Run docker container using image
+'docker run --rm -it -v /:/<directory in docker> <the name of the image that was built>'
+
+5. Allow to run bash scripts
+'chmod +x do_all_the_staff.sh ./scripts/*'
+or
+'chmod 775 do_all_the_staff.sh ./scripts/*'
+
+6. Run all scripts using 
+'sh do_all_the_staff.sh'
 
 ## Development
 
