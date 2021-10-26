@@ -72,7 +72,7 @@ List of packages and their contents:
 - [x] create script files
 - [x] fill scripts
 - [x] docker file, docker image
-- [x] tests - kinda ok
+- [x] tests
 - [x] GitHub actions
 - [x] ReadMe
 
