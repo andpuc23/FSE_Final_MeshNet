@@ -16,7 +16,6 @@ As authors mention, please cite them in your research:
 ```
 
 ## Quickstart
-
 `scripts` directory contains shell scripts for the main subroutines:
 1. install_libs.sh downloads all required python libraries, listed in requirements.txt 
 2. get_dataset.sh to download the dataset from Google.Drive
