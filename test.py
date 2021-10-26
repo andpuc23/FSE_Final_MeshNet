@@ -1,9 +1,11 @@
-import numpy as np
+"""
+performs model evaluation
+"""
 import os
 import torch
 from torch.autograd import Variable
-import torch.nn as nn
-import torch.utils.data as data
+from torch import nn
+from torch.utils import data
 from config import get_test_config
 from data import ModelNet40
 from models import MeshNet
@@ -19,11 +21,15 @@ data_loader = data.DataLoader(data_set, batch_size=1, num_workers=4, shuffle=Tru
 
 
 def test_model(model):
-
+    """
+    do test
+    :param model:
+    :return:
+    """
     correct_num = 0
     ft_all, lbl_all = None, None
 
-    for i, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader):
+    for _, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader):
         centers = Variable(torch.cuda.FloatTensor(centers.cuda()))
         corners = Variable(torch.cuda.FloatTensor(corners.cuda()))
         normals = Variable(torch.cuda.FloatTensor(normals.cuda()))
@@ -39,8 +45,8 @@ def test_model(model):
         ft_all = append_feature(ft_all, feas.detach())
         lbl_all = append_feature(lbl_all, targets.detach(), flaten=True)
 
-    print('Accuracy: {:.4f}'.format(float(correct_num) / len(data_set)))
-    print('mAP: {:.4f}'.format(calculate_map(ft_all, lbl_all)))
+    print(f'Accuracy: {float(correct_num) / len(data_set)}')
+    print(f'mAP: {calculate_map(ft_all, lbl_all)}')
 
 
 if __name__ == '__main__':

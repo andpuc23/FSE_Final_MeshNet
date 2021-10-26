@@ -1,12 +1,20 @@
+"""
+module with the actual model
+"""
 import torch
-import torch.nn as nn
+from torch import nn
 from models import SpatialDescriptor, StructuralDescriptor, MeshConvolution
 
 
 class MeshNet(nn.Module):
-
+    """model class"""
     def __init__(self, cfg, require_fea=False):
-        super(MeshNet, self).__init__()
+        """
+
+        :param cfg:
+        :param require_fea:
+        """
+        super().__init__()
         self.require_fea = require_fea
 
         self.spatial_descriptor = SpatialDescriptor()
@@ -34,11 +42,21 @@ class MeshNet(nn.Module):
         )
 
     def forward(self, centers, corners, normals, neighbor_index):
+        """
+
+        :param centers:
+        :param corners:
+        :param normals:
+        :param neighbor_index:
+        :return:
+        """
         spatial_fea0 = self.spatial_descriptor(centers)
         structural_fea0 = self.structural_descriptor(corners, normals, neighbor_index)
 
-        spatial_fea1, structural_fea1 = self.mesh_conv1(spatial_fea0, structural_fea0, neighbor_index)
-        spatial_fea2, structural_fea2 = self.mesh_conv2(spatial_fea1, structural_fea1, neighbor_index)
+        spatial_fea1, structural_fea1 = self.mesh_conv1(spatial_fea0,
+                                                        structural_fea0, neighbor_index)
+        spatial_fea2, structural_fea2 = self.mesh_conv2(spatial_fea1,
+                                                        structural_fea1, neighbor_index)
         spatial_fea3 = self.fusion_mlp(torch.cat([spatial_fea2, structural_fea2], 1))
 
         fea = self.concat_mlp(torch.cat([spatial_fea1, spatial_fea2, spatial_fea3], 1))
@@ -49,5 +67,4 @@ class MeshNet(nn.Module):
 
         if self.require_fea:
             return cls, fea / torch.norm(fea)
-        else:
-            return cls
+        return cls

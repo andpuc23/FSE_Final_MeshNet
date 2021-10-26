@@ -1,13 +1,21 @@
+"""
+neural network layers declaration
+"""
 import numpy as np
 import torch
-import torch.nn as nn
+from torch import nn
 from torch.nn.parameter import Parameter
 
 
 class FaceRotateConvolution(nn.Module):
-
+    """
+    some network module
+    """
     def __init__(self):
-        super(FaceRotateConvolution, self).__init__()
+        """
+        constructor of some network module
+        """
+        super().__init__()
         self.rotate_mlp = nn.Sequential(
             nn.Conv1d(6, 32, 1),
             nn.BatchNorm1d(32),
@@ -26,7 +34,11 @@ class FaceRotateConvolution(nn.Module):
         )
 
     def forward(self, corners):
-
+        """
+        forward step of learning
+        :param corners: some array
+        :return: result of transformation
+        """
         fea = (self.rotate_mlp(corners[:, :6]) +
                self.rotate_mlp(corners[:, 3:9]) +
                self.rotate_mlp(torch.cat([corners[:, 6:], corners[:, :3]], 1))) / 3
@@ -35,18 +47,30 @@ class FaceRotateConvolution(nn.Module):
 
 
 class FaceKernelCorrelation(nn.Module):
-
+    """
+    other network module
+    """
     def __init__(self, num_kernel=64, sigma=0.2):
-        super(FaceKernelCorrelation, self).__init__()
+        """
+        other network module constructor
+        :param num_kernel: kernel number
+        :param sigma: sigma parameter
+        """
+        super().__init__()
         self.num_kernel = num_kernel
         self.sigma = sigma
         self.weight_alpha = Parameter(torch.rand(1, num_kernel, 4) * np.pi)
         self.weight_beta = Parameter(torch.rand(1, num_kernel, 4) * 2 * np.pi)
-        self.bn = nn.BatchNorm1d(num_kernel)
+        self.b_n = nn.BatchNorm1d(num_kernel)
         self.relu = nn.ReLU()
 
     def forward(self, normals, neighbor_index):
+        """
 
+        :param normals:
+        :param neighbor_index:
+        :return:
+        """
         b, _, n = normals.size()
 
         center = normals.unsqueeze(2).expand(-1, -1, self.num_kernel, -1).unsqueeze(4)
@@ -66,13 +90,18 @@ class FaceKernelCorrelation(nn.Module):
         dist = torch.sum((fea - weight)**2, 1)
         fea = torch.sum(torch.sum(np.e**(dist / (-2 * self.sigma**2)), 4), 3) / 16
 
-        return self.relu(self.bn(fea))
+        return self.relu(self.b_n(fea))
 
 
 class SpatialDescriptor(nn.Module):
-
+    """
+    network module
+    """
     def __init__(self):
-        super(SpatialDescriptor, self).__init__()
+        """
+        network module constructor
+        """
+        super().__init__()
 
         self.spatial_mlp = nn.Sequential(
             nn.Conv1d(3, 64, 1),
@@ -84,16 +113,23 @@ class SpatialDescriptor(nn.Module):
         )
 
     def forward(self, centers):
+        """learning step"""
         return self.spatial_mlp(centers)
 
 
 class StructuralDescriptor(nn.Module):
-
+    """
+    network module
+    """
     def __init__(self, cfg):
-        super(StructuralDescriptor, self).__init__()
+        """
+        network module constructor
+        :param cfg: config
+        """
+        super().__init__()
 
-        self.FRC = FaceRotateConvolution()
-        self.FKC = FaceKernelCorrelation(cfg['num_kernel'], cfg['sigma'])
+        self.face_rotate_conv = FaceRotateConvolution()
+        self.face_kernel_corr = FaceKernelCorrelation(cfg['num_kernel'], cfg['sigma'])
         self.structural_mlp = nn.Sequential(
             nn.Conv1d(64 + 3 + cfg['num_kernel'], 131, 1),
             nn.BatchNorm1d(131),
@@ -104,16 +140,29 @@ class StructuralDescriptor(nn.Module):
         )
 
     def forward(self, corners, normals, neighbor_index):
-        structural_fea1 = self.FRC(corners)
-        structural_fea2 = self.FKC(normals, neighbor_index)
+        """learning step"""
+        structural_fea1 = self.face_rotate_conv(corners)
+        structural_fea2 = self.face_kernel_corr(normals, neighbor_index)
 
         return self.structural_mlp(torch.cat([structural_fea1, structural_fea2, normals], 1))
 
 
 class MeshConvolution(nn.Module):
-
-    def __init__(self, cfg, spatial_in_channel, structural_in_channel, spatial_out_channel, structural_out_channel):
-        super(MeshConvolution, self).__init__()
+    """
+    network module
+    """
+    def __init__(self, cfg, spatial_in_channel,
+                 structural_in_channel, spatial_out_channel,
+                 structural_out_channel):
+        """
+        network module constructor
+        :param cfg:
+        :param spatial_in_channel:
+        :param structural_in_channel:
+        :param spatial_out_channel:
+        :param structural_out_channel:
+        """
+        super().__init__()
 
         self.spatial_in_channel = spatial_in_channel
         self.structural_in_channel = structural_in_channel
@@ -124,7 +173,8 @@ class MeshConvolution(nn.Module):
         self.aggregation_method = cfg['aggregation_method']
 
         self.combination_mlp = nn.Sequential(
-            nn.Conv1d(self.spatial_in_channel + self.structural_in_channel, self.spatial_out_channel, 1),
+            nn.Conv1d(self.spatial_in_channel + self.structural_in_channel,
+                      self.spatial_out_channel, 1),
             nn.BatchNorm1d(self.spatial_out_channel),
             nn.ReLU(),
         )
@@ -143,32 +193,47 @@ class MeshConvolution(nn.Module):
         )
 
     def forward(self, spatial_fea, structural_fea, neighbor_index):
-        b, _, n = spatial_fea.size()
+        """
+        step of learning
+        :param spatial_fea:
+        :param structural_fea:
+        :param neighbor_index:
+        :return:
+        """
 
         # Combination
         spatial_fea = self.combination_mlp(torch.cat([spatial_fea, structural_fea], 1))
 
         # Aggregation
         if self.aggregation_method == 'Concat':
-            structural_fea = torch.cat([structural_fea.unsqueeze(3).expand(-1, -1, -1, 3),
-                                        torch.gather(structural_fea.unsqueeze(3).expand(-1, -1, -1, 3), 2,
-                                                     neighbor_index.unsqueeze(1).expand(-1, self.structural_in_channel,
-                                                                                        -1, -1))], 1)
+            structural_fea = \
+                torch.cat(
+                    [structural_fea.unsqueeze(3).expand(-1, -1, -1, 3),
+                     torch.gather(structural_fea.unsqueeze(3).expand(-1, -1, -1, 3), 2,
+                                  neighbor_index.unsqueeze(1).expand(-1, self.structural_in_channel,
+                                                                     -1, -1))
+                     ], 1)
             structural_fea = self.concat_mlp(structural_fea)
             structural_fea = torch.max(structural_fea, 3)[0]
 
         elif self.aggregation_method == 'Max':
-            structural_fea = torch.cat([structural_fea.unsqueeze(3),
-                                        torch.gather(structural_fea.unsqueeze(3).expand(-1, -1, -1, 3), 2,
-                                                     neighbor_index.unsqueeze(1).expand(-1, self.structural_in_channel,
-                                                                                        -1, -1))], 3)
+            structural_fea = \
+                torch.cat(
+                    [structural_fea.unsqueeze(3),
+                     torch.gather(structural_fea.unsqueeze(3).expand(-1, -1, -1, 3), 2,
+                                  neighbor_index.unsqueeze(1).expand(-1, self.structural_in_channel,
+                                                                     -1, -1))
+                     ], 3)
             structural_fea = torch.max(structural_fea, 3)[0]
 
         elif self.aggregation_method == 'Average':
-            structural_fea = torch.cat([structural_fea.unsqueeze(3),
-                                        torch.gather(structural_fea.unsqueeze(3).expand(-1, -1, -1, 3), 2,
-                                                     neighbor_index.unsqueeze(1).expand(-1, self.structural_in_channel,
-                                                                                        -1, -1))], 3)
+            structural_fea = \
+                torch.cat(
+                    [structural_fea.unsqueeze(3),
+                     torch.gather(structural_fea.unsqueeze(3).expand(-1, -1, -1, 3), 2,
+                                  neighbor_index.unsqueeze(1).expand(-1, self.structural_in_channel,
+                                                                     -1, -1))
+                     ], 3)
             structural_fea = torch.sum(structural_fea, dim=3) / 4
 
         structural_fea = self.aggregation_mlp(structural_fea)

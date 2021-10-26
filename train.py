@@ -1,10 +1,10 @@
-import copy
 import os
+import copy
 import torch
 from torch.autograd import Variable
-import torch.nn as nn
-import torch.optim as optim
-import torch.utils.data as data
+from torch import nn
+from torch import optim
+from torch.utils import data
 from config import get_train_config
 from data import ModelNet40
 from models import MeshNet
@@ -19,13 +19,22 @@ data_set = {
     x: ModelNet40(cfg=cfg['dataset'], part=x) for x in ['train', 'test']
 }
 data_loader = {
-    x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], num_workers=4, shuffle=True, pin_memory=False)
+    x: data.DataLoader(data_set[x], batch_size=cfg['batch_size'], num_workers=4,
+                       shuffle=True, pin_memory=False)
     for x in ['train', 'test']
 }
 
 
 def train_model(model, criterion, optimizer, scheduler, cfg):
-
+    """
+    perform model training
+    :param model:
+    :param criterion:
+    :param optimizer:
+    :param scheduler:
+    :param cfg:
+    :return:
+    """
     best_acc = 0.0
     best_map = 0.0
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -33,7 +42,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
     for epoch in range(1, cfg['max_epoch']):
 
         print('-' * 60)
-        print('Epoch: {} / {}'.format(epoch, cfg['max_epoch']))
+        print(f'Epoch: {epoch} / {cfg["max_epoch"]}')
         print('-' * 60)
 
         for phrase in ['train', 'test']:
@@ -48,7 +57,8 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
             running_corrects = 0
             ft_all, lbl_all = None, None
 
-            for i, (centers, corners, normals, neighbor_index, targets) in enumerate(data_loader[phrase]):
+            for i, (centers, corners, normals, neighbor_index, targets) \
+                    in enumerate(data_loader[phrase]):
 
                 optimizer.zero_grad()
 
@@ -78,7 +88,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
             epoch_acc = running_corrects.double() / len(data_set[phrase])
 
             if phrase == 'train':
-                print('{} Loss: {:.4f} Acc: {:.4f}'.format(phrase, epoch_loss, epoch_acc))
+                print(f'{phrase} Loss: {epoch_loss} Acc: {epoch_acc}')
 
             if phrase == 'test':
                 epoch_map = calculate_map(ft_all, lbl_all)
@@ -88,9 +98,9 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                 if epoch_map > best_map:
                     best_map = epoch_map
                 if epoch % 10 == 0:
-                    torch.save(copy.deepcopy(model.state_dict()), 'ckpt_root/{}.pkl'.format(epoch))
+                    torch.save(copy.deepcopy(model.state_dict()), f'ckpt_root/{epoch}.pkl')
 
-                print('{} Loss: {:.4f} Acc: {:.4f} mAP: {:.4f}'.format(phrase, epoch_loss, epoch_acc, epoch_map))
+                print(f'{phrase} Loss: {epoch_loss} Acc: {epoch_acc} mAP: {epoch_map}')
 
     return best_model_wts
 
@@ -102,8 +112,10 @@ if __name__ == '__main__':
     model = nn.DataParallel(model)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=cfg['lr'], momentum=cfg['momentum'], weight_decay=cfg['weight_decay'])
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=cfg['milestones'], gamma=cfg['gamma'])
+    optimizer = optim.SGD(model.parameters(), lr=cfg['lr'], momentum=cfg['momentum'],
+                          weight_decay=cfg['weight_decay'])
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer,
+                                               milestones=cfg['milestones'], gamma=cfg['gamma'])
 
     best_model_wts = train_model(model, criterion, optimizer, scheduler, cfg)
     torch.save(best_model_wts, os.path.join(cfg['ckpt'], 'MeshNet_best.pkl'))

@@ -1,9 +1,19 @@
-import requests
+"""
+the script downloads file specified from google drive
+"""
 import os
+import requests
 
 
-def download_file_from_google_drive(id, destination):
+def download_file_from_google_drive(file_id, destination):
+    """
+
+    :param file_id: what
+    :param destination: where
+    :return:
+    """
     def get_confirm_token(response):
+        """returns warning if any"""
         for key, value in response.cookies.items():
             if key.startswith('download_warning'):
                 return value
@@ -11,27 +21,27 @@ def download_file_from_google_drive(id, destination):
         return None
 
     def save_response_content(response, destination):
-        CHUNK_SIZE = 32768
+        chunk_size = 32768
 
         os.makedirs(os.path.dirname(destination), exist_ok=True)
         with open(destination, "wb") as f:
-            for chunk in response.iter_content(CHUNK_SIZE):
+            for chunk in response.iter_content(chunk_size):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
         print('download finished, check file', os.path.abspath(destination))
 
-    URL = "https://docs.google.com/uc?export=download"
+    url = "https://docs.google.com/uc?export=download"
 
     session = requests.Session()
 
-    response = session.get(URL, params={'id': id}, stream=True)
+    response = session.get(url, params={'id': file_id}, stream=True)
     token = get_confirm_token(response)
 
     if token:
-        params = {'id': id, 'confirm': token}
-        response = session.get(URL, params=params, stream=True)
+        params = {'id': file_id, 'confirm': token}
+        response = session.get(url, params=params, stream=True)
 
-    save_response_content(response, destination)    
+    save_response_content(response, destination)
 
 
 if __name__ == "__main__":

@@ -1,18 +1,31 @@
+"""
+functions to parse config
+"""
 import os
 import os.path as osp
 import yaml
 
 
-def _check_dir(dir, make_dir=True):
-    if not osp.exists(dir):
+def _check_dir(directory, make_dir=True):
+    """
+    checks the directory does not exist,
+    otherwise creates it
+    :exception if directory already exists
+    """
+    if not osp.exists(directory):
         if make_dir:
-            print('Create directory {}'.format(dir))
-            os.mkdir(dir)
+            print(f'Create directory {directory}')
+            os.mkdir(directory)
         else:
-            raise Exception('Directory not exist: {}'.format(dir))
+            raise Exception(f'Directory not exist: {directory}')
 
 
 def get_train_config(config_file='config/train_config.yaml'):
+    """
+    parses training config
+    :param config_file: path to train config .yaml file
+    :return: parsed yaml file as a dict
+    """
     with open(config_file, 'r') as f:
         cfg = yaml.load(f)
 
@@ -23,6 +36,11 @@ def get_train_config(config_file='config/train_config.yaml'):
 
 
 def get_test_config(config_file='config/test_config.yaml'):
+    """
+    parses test config
+    :param config_file: path to test config .yaml file
+    :return: parsed yaml file as a dict
+    """
     with open(config_file, 'r') as f:
         cfg = yaml.load(f)
 
