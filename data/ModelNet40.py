@@ -24,18 +24,18 @@ class ModelNet40(data.Dataset):
         self.part = part
 
         self.data = []
-        for type in os.listdir(self.root):
-            type_index = type_to_index_map[type]
-            type_root = os.path.join(os.path.join(self.root, type), part)
+        for _type in os.listdir(self.root):
+            type_index = type_to_index_map[_type]
+            type_root = os.path.join(os.path.join(self.root, _type), part)
             for filename in os.listdir(type_root):
                 if filename.endswith('.npz'):
                     self.data.append((os.path.join(type_root, filename), type_index))
 
     def __getitem__(self, i):
-        path, type = self.data[i]
-        data = np.load(path)
-        face = data['face']
-        neighbor_index = data['neighbor_index']
+        path, _type = self.data[i]
+        _data = np.load(path)
+        face = _data['face']
+        neighbor_index = _data['neighbor_index']
 
         # data augmentation
         if self.augment_data and self.part == 'train':
@@ -58,7 +58,7 @@ class ModelNet40(data.Dataset):
         # to tensor
         face = torch.from_numpy(face).float()
         neighbor_index = torch.from_numpy(neighbor_index).long()
-        target = torch.tensor(type, dtype=torch.long)
+        target = torch.tensor(_type, dtype=torch.long)
 
         # reorganize
         face = face.permute(1, 0).contiguous()

@@ -3,13 +3,13 @@ import os.path as osp
 import yaml
 
 
-def _check_dir(dir, make_dir=True):
-    if not osp.exists(dir):
+def _check_dir(directory, make_dir=True):
+    if not osp.exists(directory):
         if make_dir:
-            print('Create directory {}'.format(dir))
-            os.mkdir(dir)
+            print('Create directory {}'.format(directory))
+            os.mkdir(directory)
         else:
-            raise Exception('Directory not exist: {}'.format(dir))
+            raise Exception('Directory not exist: {}'.format(directory))
 
 
 def get_train_config(config_file='config/train_config.yaml'):

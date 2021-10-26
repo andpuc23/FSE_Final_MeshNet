@@ -1,4 +1,6 @@
 ## Introduction
+This repository is not an original official implementation of the work, but a refactored codebase.
+Performed within the FSE coursework at Skoltech.
 The repository is a modification of [original repo](https://github.com/iMoonLab/MeshNet).
 We make the project easier to use and less irritating to setup.
 
@@ -53,7 +55,7 @@ List of packages and their contents:
 - [x] docker file, docker image
 - [ ] build system (do we need it?)
 - [ ] tests - in progress
-- [ ] GitHub actions - in progress
+- [x] GitHub actions - in progress
 - [x] ReadMe
 
 

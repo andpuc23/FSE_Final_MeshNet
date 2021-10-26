@@ -2,7 +2,7 @@ import requests
 import os
 
 
-def download_file_from_google_drive(id, destination):
+def download_file_from_google_drive(file_id, destination):
     def get_confirm_token(response):
         for key, value in response.cookies.items():
             if key.startswith('download_warning'):
@@ -24,11 +24,11 @@ def download_file_from_google_drive(id, destination):
 
     session = requests.Session()
 
-    response = session.get(URL, params={'id': id}, stream=True)
+    response = session.get(URL, params={'id': file_id}, stream=True)
     token = get_confirm_token(response)
 
     if token:
-        params = {'id': id, 'confirm': token}
+        params = {'id': file_id, 'confirm': token}
         response = session.get(URL, params=params, stream=True)
 
     save_response_content(response, destination)    

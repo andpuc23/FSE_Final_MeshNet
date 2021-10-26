@@ -1,7 +1,6 @@
 import glob as glob
 import numpy as np
 import os
-# from pymesh import meshio
 import pymesh
 
 
@@ -21,12 +20,12 @@ if __name__ == '__main__':
     root = 'ModelNet40_simplification'
     new_root = 'ModelNet40_MeshNet'
 
-    for type in os.listdir(root):
+    for _type in os.listdir(root):
         for phrase in ['train', 'test']:
-            type_path = os.path.join(root, type)
+            type_path = os.path.join(root, _type)
             phrase_path = os.path.join(type_path, phrase)
             if not os.path.exists(type_path):
-                os.mkdir(os.path.join(new_root, type))
+                os.mkdir(os.path.join(new_root, _type))
             if not os.path.exists(phrase_path):
                 os.mkdir(phrase)
 
@@ -87,7 +86,7 @@ if __name__ == '__main__':
                 neighbors = np.array(neighbors)
 
                 _, filename = os.path.split(file)
-                np.savez(new_root + type + '/' + phrase + '/' + filename[:-4] + '.npz',
+                np.savez(new_root + _type + '/' + phrase + '/' + filename[:-4] + '.npz',
                          faces=faces, neighbors=neighbors)
 
                 print(file)
