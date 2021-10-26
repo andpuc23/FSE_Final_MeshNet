@@ -33,9 +33,11 @@ class ModelNet40(data.Dataset):
         self.augment_data = cfg['augment_data']
         self.max_faces = cfg['max_faces']
         self.part = part
-
+	        
         self.data = []
-        for _type in os.listdir(self.root):
+        types = os.listdir(self.root)
+        types.remove('.DS_Store')
+        for _type in types:
             type_index = type_to_index_map[_type]
             type_root = os.path.join(os.path.join(self.root, _type), part)
             for filename in os.listdir(type_root):

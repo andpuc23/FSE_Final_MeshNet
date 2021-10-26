@@ -14,13 +14,13 @@ def _check_dir(directory, make_dir=True):
     """
     if not osp.exists(directory):
         if make_dir:
-            print(f'Create directory {directory}')
+            print('Create directory {}'.format(directory))
             os.mkdir(directory)
         else:
-            raise Exception(f'Directory not exist: {directory}')
+            raise Exception('Directory not exist: {}'.format(directory))
 
 
-def get_train_config(config_file='config/train_config.yaml'):
+def get_train_config(config_file='../config/train_config.yaml'):
     """
     parses training config
     :param config_file: path to train config .yaml file
@@ -35,7 +35,7 @@ def get_train_config(config_file='config/train_config.yaml'):
     return cfg
 
 
-def get_test_config(config_file='config/test_config.yaml'):
+def get_test_config(config_file='../config/test_config.yaml'):
     """
     parses test config
     :param config_file: path to test config .yaml file

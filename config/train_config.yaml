@@ -3,7 +3,7 @@ cuda_devices: '0'   # multi-gpu training is available
 
 # dataset
 dataset:
-  data_root: 'ModelNet40_MeshNet/data/'
+  data_root: 'ModelNet40_MeshNet/'
   augment_data: true
   max_faces: 1024
 

@@ -42,7 +42,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
     for epoch in range(1, cfg['max_epoch']):
 
         print('-' * 60)
-        print(f'Epoch: {epoch} / {cfg["max_epoch"]}')
+        print('Epoch: {} / {}'.format(epoch, cfg["max_epoch"]))
         print('-' * 60)
 
         for phrase in ['train', 'test']:
@@ -88,7 +88,7 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
             epoch_acc = running_corrects.double() / len(data_set[phrase])
 
             if phrase == 'train':
-                print(f'{phrase} Loss: {epoch_loss} Acc: {epoch_acc}')
+                print('{} Loss: {} Acc: {}'.format(phrase, epoch_loss, epoch_acc))
 
             if phrase == 'test':
                 epoch_map = calculate_map(ft_all, lbl_all)
@@ -98,9 +98,9 @@ def train_model(model, criterion, optimizer, scheduler, cfg):
                 if epoch_map > best_map:
                     best_map = epoch_map
                 if epoch % 10 == 0:
-                    torch.save(copy.deepcopy(model.state_dict()), f'ckpt_root/{epoch}.pkl')
+                    torch.save(copy.deepcopy(model.state_dict()), 'ckpt_root/{}.pkl'.format(epoch))
 
-                print(f'{phrase} Loss: {epoch_loss} Acc: {epoch_acc} mAP: {epoch_map}')
+                print('{} Loss: {} Acc: {} mAP: {}'.format(phrase, epoch_loss, epoch_acc, epoch_map))
 
     return best_model_wts
 
