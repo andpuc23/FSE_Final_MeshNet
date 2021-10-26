@@ -1,12 +1,16 @@
-import numpy as np
+"""
+dataset class and dict with class label to number mapping
+"""
+
 import os
+import numpy as np
 import torch
-import torch.utils.data as data
+from torch.utils import data
 
 type_to_index_map = {
     'night_stand': 0, 'range_hood': 1, 'plant': 2, 'chair': 3, 'tent': 4,
     'curtain': 5, 'piano': 6, 'dresser': 7, 'desk': 8, 'bed': 9,
-    'sink': 10,  'laptop':11, 'flower_pot': 12, 'car': 13, 'stool': 14,
+    'sink': 10,  'laptop': 11, 'flower_pot': 12, 'car': 13, 'stool': 14,
     'vase': 15, 'monitor': 16, 'airplane': 17, 'stairs': 18, 'glass_box': 19,
     'bottle': 20, 'guitar': 21, 'cone': 22,  'toilet': 23, 'bathtub': 24,
     'wardrobe': 25, 'radio': 26,  'person': 27, 'xbox': 28, 'bowl': 29,
@@ -16,8 +20,15 @@ type_to_index_map = {
 
 
 class ModelNet40(data.Dataset):
-
+    """
+    dataset class
+    """
     def __init__(self, cfg, part='train'):
+        """
+        constructor, fills the data by config
+        :param cfg: config
+        :param part: 'train' (default) or 'test'
+        """
         self.root = cfg['data_root']
         self.augment_data = cfg['augment_data']
         self.max_faces = cfg['max_faces']

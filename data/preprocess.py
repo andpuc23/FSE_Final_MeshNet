@@ -1,31 +1,43 @@
-import glob as glob
-import numpy as np
+"""
+script for data preprocessing
+"""
 import os
+import glob
+import numpy as np
 import pymesh
 
 
-def find_neighbor(faces, faces_contain_this_vertex, vf1, vf2, except_face):
-    for i in (faces_contain_this_vertex[vf1] & faces_contain_this_vertex[vf2]):
-        if i != except_face:
-            face = faces[i].tolist()
+def find_neighbor(_faces, _faces_contain_this_vertex, vf1, vf2, except_face):
+    """
+
+    :param _faces:
+    :param _faces_contain_this_vertex:
+    :param vf1:
+    :param vf2:
+    :param except_face:
+    :return:
+    """
+    for index in (_faces_contain_this_vertex[vf1] & _faces_contain_this_vertex[vf2]):
+        if index != except_face:
+            face = _faces[index].tolist()
             face.remove(vf1)
             face.remove(vf2)
-            return i
+            return index
 
     return except_face
 
 
 if __name__ == '__main__':
 
-    root = 'ModelNet40_simplification'
-    new_root = 'ModelNet40_MeshNet'
+    ROOT = 'ModelNet40_simplification'
+    NEW_ROOT = 'ModelNet40_MeshNet'
 
-    for _type in os.listdir(root):
+    for _type in os.listdir(ROOT):
         for phrase in ['train', 'test']:
-            type_path = os.path.join(root, _type)
+            type_path = os.path.join(ROOT, _type)
             phrase_path = os.path.join(type_path, phrase)
             if not os.path.exists(type_path):
-                os.mkdir(os.path.join(new_root, _type))
+                os.mkdir(os.path.join(NEW_ROOT, _type))
             if not os.path.exists(phrase_path):
                 os.mkdir(phrase)
 
@@ -86,7 +98,7 @@ if __name__ == '__main__':
                 neighbors = np.array(neighbors)
 
                 _, filename = os.path.split(file)
-                np.savez(new_root + _type + '/' + phrase + '/' + filename[:-4] + '.npz',
+                np.savez(NEW_ROOT + _type + '/' + phrase + '/' + filename[:-4] + '.npz',
                          faces=faces, neighbors=neighbors)
 
                 print(file)

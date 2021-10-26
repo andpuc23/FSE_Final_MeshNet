@@ -1,3 +1,6 @@
+"""
+testing the dataset is loaded
+"""
 import os
 import unittest
 
@@ -12,6 +15,10 @@ class TestLoadDataset(unittest.TestCase):
         os.system('./get_dataset.sh')
 
     def test_data_loaded(self):
+        """
+        the test itself
+        :return:
+        """
         assert os.path.exists('../data/ModelNet40_MeshNet.zip')
 
     def tearDown(self) -> None:

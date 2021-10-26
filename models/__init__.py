@@ -1,2 +1,5 @@
+"""
+module with the final neural network
+"""
 from .layers import SpatialDescriptor, StructuralDescriptor, MeshConvolution
-from .MeshNet import MeshNet
+from .mesh_net import MeshNet
